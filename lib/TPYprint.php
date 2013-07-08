@@ -1,7 +1,8 @@
 <?php
 ini_set("display_errors", false);
 require('fpdf/fpdf.php');
-require_once('fpdi/fpdi.php'); 
+require('fpdi/fpdi.php'); 
+require('mem_image.php');
 require_once("../config.php");
 require_once("sessionstart.php");
 require_once("dblib.php");
@@ -27,16 +28,22 @@ if ($_GET['I_ID']!== strval(intval($_GET['I_ID']))){
         $iid=  db_real_escape_string($_GET["I_ID"], $ab_dbh);
         $row=  db_fetch_assoc(db_query("SELECT *,DATE(I_DATE) as DATE,Round(I_VALUE/(1+I_VAT/100),2) as PAY,I_VALUE*(I_TAX/100) as TAX,I_VALUE*(I_VAT/100) as FPA FROM block.income join person on I_P_PIN=P_PIN join employer on I_E_ID=E_ID WHERE P_PIN={$pin} and I_ID={$iid};",$ab_dbh));
         
-        ini_restore();
+     ini_restore();
 $apof=iconv("utf-8", "ISO-8859-7","ΑΘΕΩΡΗΤΟ ΒΑΣΕΙ 1004/4-1-2013 ΑΠΟΦΑΣΗ ΥΠ. ΟΙΚΟΝΟΜΙΚΩΝ");
-$pdf = new FPDI('P','mm','A4');
+$pdf = new PDF_COMBO('P','mm','A4');
 $pagecount = $pdf->setSourceFile('template.pdf');
 $tplidx = $pdf->importPage(1, '/MediaBox');
+
+
 
 $pdf->addPage();
 $pdf->useTemplate($tplidx);
 
-
+//echo '<img src="data:image/jpeg;base64,' . base64_encode( $stampr['P_STAMP'] ) . '" />';
+$logo = $row['P_STAMP'];
+//$logo=  file_get_contents("Barcode-icon.png");
+//Output it
+$pdf->MemImage($logo, 13, 13,60,30);
 
 $pname=iconv("utf-8", "ISO-8859-7",$row["P_NAME"] );
 $idetails="   ".iconv("utf-8", "ISO-8859-7",$row["I_DETAILS"] );
