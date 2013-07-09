@@ -52,8 +52,8 @@ $res=db_query($q, $ab_dbh);
 if (($_POST["addstamp"]==1)){
      
      $fieldname="stamp";
-//     echo "<h3>".$_FILES[$fieldname]['size']."</h3>";
- 			if ($_FILES[$fieldname]['name']!="" && $_FILES[$fieldname]['size']<100000)
+     echo "<h3>".$_FILES[$fieldname]['size']."</h3>";
+ 			if ($_FILES[$fieldname]['name']!="" && $_FILES[$fieldname]['size']<1000000 )
 													{
 					
 
@@ -101,7 +101,7 @@ print<<<HTML_
 
     <div id="stamprel" style="display:{$disp};">
 HTML_;
-    if (sizeof($stampr['P_STAMP'])>0) echo '<img src="data:image/jpeg;base64,' . base64_encode( $stampr['P_STAMP'] ) . '" />';
+    if (sizeof($stampr['P_STAMP'])>0) echo '<img src="data:image/jpeg;base64,' . base64_encode( $stampr['P_STAMP'] ) . '" style="height:100px;" />';
     print<<<HTML_
     <div class="text-error"> {$uploadmessage}</div>
     <form class="form-inline" action="{$_SERVER["PHP_SELF"]}" method="POST" id="frm_stamp" enctype="multipart/form-data">

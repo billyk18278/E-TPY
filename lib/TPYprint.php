@@ -154,6 +154,7 @@ $pdf->AddFont('SegoeUI-Semilight','','31a5477d7f020de55fe95237020d4a11_segoeuisl
                    
                    //DEYTERO
                    $offset=141;
+                   $pdf->MemImage($logo, 13, 13+$offset,60,30);
                    $pdf->SetFont('SegoeUI-Semilight','',15);
 	
 	   $pdf->SetY(37+$offset);
