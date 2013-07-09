@@ -43,8 +43,9 @@ $pdf->useTemplate($tplidx);
 $logo = $row['P_STAMP'];
 //$logo=  file_get_contents("Barcode-icon.png");
 //Output it
-$pdf->MemImage($logo, 13, 13,60,30);
-
+if ($logo!="") {
+    $pdf->MemImage($logo, 13, 13,60,30);
+}
 $pname=iconv("utf-8", "ISO-8859-7",$row["P_NAME"] );
 $idetails="   ".iconv("utf-8", "ISO-8859-7",$row["I_DETAILS"] );
 $idetails=preg_replace( "/\r|\n/", "", $idetails );
@@ -154,7 +155,8 @@ $pdf->AddFont('SegoeUI-Semilight','','31a5477d7f020de55fe95237020d4a11_segoeuisl
                    
                    //DEYTERO
                    $offset=141;
-                   $pdf->MemImage($logo, 13, 13+$offset,60,30);
+                   if ($logo!="") { $pdf->MemImage($logo, 13, 13+$offset,60,30);}
+                   
                    $pdf->SetFont('SegoeUI-Semilight','',15);
 	
 	   $pdf->SetY(37+$offset);
