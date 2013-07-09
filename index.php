@@ -52,7 +52,7 @@ $res=db_query($q, $ab_dbh);
 if (($_POST["addstamp"]==1)){
      
      $fieldname="stamp";
-     echo "<h3>".$_FILES[$fieldname]['size']."</h3>";
+//     echo "<h3>".$_FILES[$fieldname]['size']."</h3>";
  			if ($_FILES[$fieldname]['name']!="" && $_FILES[$fieldname]['size']<1000000 )
 													{
 					
