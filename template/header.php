@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="./metro/css/bootstrap-responsive.min.css" type="text/css">
 <link rel="stylesheet" href="./metro/css/bootstrap.min.css" type="text/css">
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 <link rel="stylesheet" href="./metro/css/m-buttons.min.css" type="text/css">
 <link rel="stylesheet" href="./metro/css/m-styles.min.css" type="text/css">
 <link rel="stylesheet" href="./metro/css/typography.css" type="text/css">

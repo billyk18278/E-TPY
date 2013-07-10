@@ -84,12 +84,12 @@ $name=$USER["user"]["P_NAME"];
 $disp="block";
 if ($pin==""){
     $pin="0000";
-    $name="Ανώνυμος Χρήστης";
+    $name="";
     $sssiontext=" AND `I_SESSIONID` like '".session_id()."'";
     $disp="none";
     print<<<HTML_
    <pre>Τι κάνω με το E-TPY;
-Αφού καταχωρίσω το ποσό την αιτιολογία και αν έχει ΦΠΑ, μπορώ να τυπώσω το συγκεκριμένο τιμολόγιο (π.χ το 3) 
+Αφού καταχωρίσω το ποσό την αιτιολογία και αν έχει ΦΠΑ, μπορώ να τυπώσω (πατώντας το εικονίδιο στο τέλος της γραμμής) το συγκεκριμένο τιμολόγιο (π.χ το 3) 
 με καθαρά γραμμένα τα ποσά επίσης το ποσό ολογράφως και την αιτιολογία και να βάλω μετά σφραγίδα και υπογραφή
 στο ένα από τα δύο που βγαίνουν στην σελίδα και να το δώσω.
 Αν εχω μπλοκάκι βιβλιοπωλίου (και δεν το εβαλα ακόμα στην ανακύκλωση) μπορώ να συρράψω πάνω το αντίγραφο αν 
@@ -125,7 +125,7 @@ HTML_;
 <tr>
 <th >ΤΠΥ</th>
 <th>HM/NIA</th>
-<th>ΠΕΛΑΤΗΣ</th>
+<th>ΕΡΓΟΔΟΤΗΣ</th>
 <th>ΑΙΤΙΟΛΟΓΙΑ</th>
 <th>ΠΟΣΟ</th>
 <th>Φ.Π.Α. %</th>
@@ -172,8 +172,8 @@ print<<<_HTML
 
 <td>{$tax}</td>
 
-<td><a href="{$_SERVER["PHP_SELF"]}?pin={$pin}&delete={$rows['I_ID']}" onclick="return confirm('Η εγγραφή αυτή πρόκειται να διαγραφεί!');"> <i class="icon-trash"></i></a></td>
-<td><a target="_blank" href="lib/TPYprint.php?pin={$pin}&I_ID={$rows['I_ID']}"><i class="icon-print"></i></a></td>
+<td><a href="{$_SERVER["PHP_SELF"]}?pin={$pin}&delete={$rows['I_ID']}" onclick="return confirm('Η εγγραφή αυτή πρόκειται να διαγραφεί!');"> <i class="icon-trash icon-2x"></i></a></td>
+<td><a target="_blank" href="lib/TPYprint.php?pin={$pin}&I_ID={$rows['I_ID']}"><i class="icon-print icon-2x"></i></a></td>
 </tr>
 
 _HTML;
