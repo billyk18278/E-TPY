@@ -26,7 +26,7 @@ if ($_GET['I_ID']!== strval(intval($_GET['I_ID']))){
             die();
         }
         $iid=  db_real_escape_string($_GET["I_ID"], $ab_dbh);
-        $row=  db_fetch_assoc(db_query("SELECT *,DATE(I_DATE) as DATE,Round(I_VALUE/(1+I_VAT/100),2) as PAY,I_VALUE*(I_TAX/100) as TAX,I_VALUE*(I_VAT/100) as FPA FROM block.income join person on I_P_PIN=P_PIN join employer on I_E_ID=E_ID WHERE P_PIN={$pin} and I_ID={$iid};",$ab_dbh));
+        $row=  db_fetch_assoc(db_query("SELECT *,DATE(I_DATE) as DATE,Round(I_VALUE/(1+I_VAT/100),2) as PAY,Round(I_VALUE/(1+I_VAT/100),2)*(I_TAX/100) as TAX,Round(I_VALUE/(1+I_VAT/100),2)*(I_VAT/100) as FPA FROM block.income join person on I_P_PIN=P_PIN join employer on I_E_ID=E_ID WHERE P_PIN={$pin} and I_ID={$iid};",$ab_dbh));
         
      ini_restore();
 $apof=iconv("utf-8", "ISO-8859-7","ΑΘΕΩΡΗΤΟ ΒΑΣΕΙ 1004/4-1-2013 ΑΠΟΦΑΣΗ ΥΠ. ΟΙΚΟΝΟΜΙΚΩΝ");

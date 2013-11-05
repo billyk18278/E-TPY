@@ -10,14 +10,15 @@
 
 	<div class="row-fluid">
 
-	<div id="footer" class="span12">
+	<div  class="span12 footer">
 
-		<p>Design and Implementation:Vassilis A.U.Th.</p>
-		
+		<p>Design and Implementation:Vassilis Kilintzis A.U.Th. Για προτάσεις και σχόλια μέιλ μι στο <a href="mailto:billyk@auth.gr">billyk@auth.gr</a></p>
 		</div>
 		</div>
 </div>  
 <script src="metro/js/m-dropdown.min.js"></script>
+<script language="javascript" src="metro/js/bootstrap-typeahead-AJAX.js"></script>
+<script language="javascript" src="metro/js/bootstrap-modal.js"></script>
 
 </body>
 </html>

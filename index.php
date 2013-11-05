@@ -49,6 +49,33 @@ $res=db_query($q, $ab_dbh);
     
     
 }
+//period select
+$period="";
+$curyear=date("Y");
+if ($_GET["ola"]==1){
+    $periodtext="συνολικά";
+}else{
+    
+if ($_GET["yr"]>2000 && $_GET["yr"]<2050){
+    if (round($_GET["tr"])>0 && round($_GET["tr"])<5){
+    $period=" AND ETOS={$_GET["yr"]} "."AND TRIMHNO=".round($_GET["tr"]);
+    $periodtext="για ".round($_GET["tr"])."ο τρίμηνο του {$_GET["yr"]}";
+    }else{
+        $period=" AND ETOS={$_GET["yr"]} ";
+        $periodtext="για ολόκληρο το {$_GET["yr"]}";
+    }
+}else if (round($_GET["tr"])>0 && round($_GET["tr"])<5){
+
+    $period=" AND ETOS={$curyear} AND TRIMHNO=".round($_GET["tr"]);
+    $periodtext="για ".round($_GET["tr"])."ο τρίμηνο του ".$curyear;
+}else{
+    $period=" AND ETOS={$curyear} AND TRIMHNO=NOW_TRIMHNO";
+    $periodtext="για το τρέχον τρίμηνο";
+}
+
+}
+
+//$period="AND TRIMHNO=NOW_TRIMHNO ";
 if (($_POST["addstamp"]==1)){
      
      $fieldname="stamp";
@@ -89,7 +116,7 @@ if ($pin==""){
     $disp="none";
     print<<<HTML_
    <pre>Τι κάνω με το E-TPY;
-Αφού καταχωρίσω το ποσό την αιτιολογία και αν έχει ΦΠΑ, μπορώ να τυπώσω (πατώντας το εικονίδιο στο τέλος της γραμμής) το συγκεκριμένο τιμολόγιο (π.χ το 3) 
+Αφού καταχωρίσω το ποσό (με . για δεκαδικά) την αιτιολογία και αν έχει ΦΠΑ, μπορώ να τυπώσω (πατώντας το εικονίδιο στο τέλος της γραμμής) το συγκεκριμένο τιμολόγιο (π.χ το 3) 
 με καθαρά γραμμένα τα ποσά επίσης το ποσό ολογράφως και την αιτιολογία και να βάλω μετά σφραγίδα και υπογραφή
 στο ένα από τα δύο που βγαίνουν στην σελίδα και να το δώσω.
 Αν εχω μπλοκάκι βιβλιοπωλίου (και δεν το εβαλα ακόμα στην ανακύκλωση) μπορώ να συρράψω πάνω το αντίγραφο αν 
@@ -103,8 +130,12 @@ HTML_;
     $sssiontext="";
 }
 $stampr= db_fetch_assoc(db_query("Select P_STAMP from person where P_PIN={$pin}", $ab_dbh));
-
-$inres=db_query("SELECT I_ID,I_AA,E_NAME,I_VAT,I_VALUE,I_TAX,I_DETAILS,P_PIN,DATE(I_DATE) as DATE,ROUND(I_VALUE/(1+I_VAT/100),2) as PAY,ROUND(I_VALUE*(I_TAX/100),2) as TAX,ROUND(I_VALUE*(I_VAT/100),2) as FPA FROM block.income join person on I_P_PIN=P_PIN join employer on I_E_ID=E_ID where P_PIN={$pin} {$sssiontext} order by I_AA;", $ab_dbh);
+$inres=db_query("SELECT a.I_ID,I_AA,E_NAME,I_VAT,I_VALUE,I_TAX,I_DETAILS,P_PIN,DATE(I_DATE) as DATE,ROUND(I_VALUE/(1+I_VAT/100),2) as PAY,
+ROUND(ROUND(I_VALUE/(1+I_VAT/100),2)*(I_TAX/100),2) as TAX,ROUND(ROUND(I_VALUE/(1+I_VAT/100),2)*(I_VAT/100),2) as FPA,
+ETOS,TRIMHNO 
+FROM income a join person on a.I_P_PIN=P_PIN join employer on a.I_E_ID=E_ID 
+join 
+(SELECT YEAR(I_DATE) as ETOS,I_ID,CASE WHEN MONTH(NOW())<3 then '1' when MONTH(NOW())>3 and MONTH(NOW())<7  then '2' when MONTH(NOW())>6 and MONTH(NOW())<10 then '3' when MONTH(NOW())>9 then '4' else 'error' end as NOW_TRIMHNO,CASE WHEN MONTH(I_DATE)<3 then '1' when MONTH(I_DATE)>3 and MONTH(I_DATE)<7  then '2' when MONTH(I_DATE)>6 and MONTH(I_DATE)<10 then '3' when MONTH(I_DATE)>9 then '4' else 'error' end as TRIMHNO FROM income) b on a.I_ID=b.I_ID where P_PIN={$pin} {$period} {$sssiontext} order by I_AA;", $ab_dbh);
 print<<<HTML_
 
     <div id="stamprel" style="display:{$disp};">
@@ -118,7 +149,11 @@ HTML_;
     <input type="hidden" name="addstamp" value="1">
     </form>
 </div>
-<h1>$name</h1>
+HTML_;
+    
+print "<h1 data-toggle=\"modal\" href=\"#dmexample\">Έσοδα {$periodtext}</h1>";
+
+print<<<HTML_
     <hr>
 <table class="table table-striped table-condensed">
 <thead>
@@ -139,21 +174,27 @@ HTML_;
 <tbody>
 HTML_;
 
-
+$fpasum=0;
+$paysum=0;
+$taxsum=0;
+$nofpapaysum=0;
 while($rows=db_fetch_array($inres)){
-$ival=  money_format('%!.2n', $rows['I_VALUE']);
+$ival=  money_format('%!.2n', $rows['I_VALUE'])."<i class=\"icon-eur\"></i>";
 if ($rows['FPA']==0){
- $fpa="-";   
+ $fpa="-";  $nofpapaysum+=$rows['PAY'];
 }else{
-$fpa=  money_format('%!.2n', $rows['FPA']);
+    $fpasum+=$rows['FPA'];
+$fpa=  money_format('%!.2n', $rows['FPA'])."<i class=\"icon-eur\"></i>";
 }
-$pay=  money_format('%!.2n', $rows['PAY']);
-$tax=  money_format('%!.2n', $rows['TAX']);
+$paysum+=$rows['PAY'];
+$pay=  money_format('%!.2n', $rows['PAY'])."<i class=\"icon-eur\"></i>";
+$taxsum+=$rows['TAX'];
+$tax=  money_format('%!.2n', $rows['TAX'])."<i class=\"icon-eur\"></i>";
 PRINT<<<_HTML
 
 <tr>
-<td style="width:20px;">{$rows["I_AA"]}</td>
-<td><input type=date value="{$rows["DATE"]}" disabled></td>
+<td >{$rows["I_AA"]}</td>
+<td><input type=date value="{$rows["DATE"]}" class="input-medium" disabled></td>
 <td>{$rows["E_NAME"]}</td>
 <td>{$rows["I_DETAILS"]}</td>
 <td>{$ival}</td>
@@ -165,6 +206,7 @@ if ($rows['I_VAT']==0){
     print $rows['I_VAT']."%";
     //print Numbers_Words::toCurrency($rows['FPA'], "el_GR", 'EUR');
 }
+
 print<<<_HTML
 </td>   
     <td>{$fpa}</td>
@@ -179,12 +221,21 @@ print<<<_HTML
 _HTML;
    $nextAA=$rows["I_AA"]+1;
 }
-PRINT<<<_HTML
+$withfpapaysum=money_format('%!.2n', $paysum-$nofpapaysum)."<i class=\"icon-eur\"></i>";
+$paysum=  money_format('%!.2n', $paysum)."<i class=\"icon-eur\"></i>";
+$taxsum=  money_format('%!.2n', $taxsum)."<i class=\"icon-eur\"></i>";
+$fpasum=  money_format('%!.2n', $fpasum)."<i class=\"icon-eur\"></i>";
+$nofpapaysum=money_format('%!.2n', $nofpapaysum)."<i class=\"icon-eur\"></i>";
 
+//SUMMARY
+
+//INPUT
+PRINT<<<_HTML
+<tr  ><td class="bg-color-grayDark fg-color-white">ΣΥΝΟΛA</td><td colspan="2" class="bg-color-grayDark fg-color-white">ΣΥΝΟΛΟ ΕΣΟΔΩΝ ΧΩΡΙΣ ΦΠΑ:{$nofpapaysum}</td><td colspan="3" class="bg-color-grayDark fg-color-white">ΣΥΝΟΛΟ ΕΣΟΔΩΝ ME ΦΠΑ:{$withfpapaysum}</td><td class="bg-color-grayDark fg-color-white">{$fpasum}</td><td class="bg-color-grayDark fg-color-white">{$paysum}</td><td class="bg-color-grayDark fg-color-white">{$taxsum}</td></tr>
 <tr valign="middle">
-<td ><input form="newTPY" type="number"  name="frm_aa" class="input-small" value="{$nextAA}" min=1></td>
+<td ><input form="newTPY" type="number"  name="frm_aa" class="input-mini" value="{$nextAA}" min=1></td>
 <td style="white-space: nowrap;"><input form="newTPY" id="frm_date" type="date"  class="input-medium" name="frm_date"></td>
-<td><select form="newTPY" id="frm_employer" name="frm_employer"><option></option>
+<td><select class="input-medium" form="newTPY" id="frm_employer" name="frm_employer"><option></option>
 _HTML;
 $res=db_query("Select E_ID,E_NAME from employer;", $ab_dbh);
 while ($emrow=  db_fetch_assoc($res)){
@@ -194,9 +245,9 @@ print<<<_HTML
 </select>
 </td>
 <td><textarea form="newTPY" required rows=3  maxlength="127" name="frm_details"></textarea></td>
-<td><input form="newTPY" type="text" required id="frm_value" class="input-small" name="frm_value" onchange="updateValues();"></td>
-<td><select  form="newTPY" id="vat" class="input-small" name="frm_vat" onchange="updateValues();"><option value="{$CFG->VAT}">{$CFG->VAT}%</option><option value="0">Απαλλαγή</option></select></td>
-<td><input type=text disabled id="fpa" class="input-small"></td>
+<td><input form="newTPY" type="text" required id="frm_value" class="input-mini" name="frm_value" onchange="updateValues();"></td>
+<td><select  form="newTPY" id="vat" class="input-mini" name="frm_vat" onchange="updateValues();"><option value="{$CFG->VAT}">{$CFG->VAT}%</option><option value="0">Απαλλαγή</option></select></td>
+<td><input type=text disabled id="fpa" class="input-mini"></td>
 <td><input type=text disabled id="pay" class="input-small"></td>
 
 <td><input type=text disabled id="tax" class="input-small"></td>
@@ -207,6 +258,34 @@ print<<<_HTML
 <form id="newTPY" action="{$_SERVER["PHP_SELF"]}" method="POST">
     <input type="hidden" value="{$pin}" name="pin">
     </form>
+    
+<div id="dmexample" class="modal hide fade in" style="display: none; ">
+<div class="modal-header">
+<a class="close" data-dismiss="modal">x</a>
+<h3>Επιλογή περιόδου προβολής στοιχείων:</h3>
+</div>
+<div class="modal-body">
+   
+    <form class="form-horizontal" method="GET" action={$_SERVER["PHP_SELF"]}>
+        <label>Επιλέξτε έτος (προαιρετικά και τρίμηνο)</label>
+        <label class="control-label">Έτος:</label> <input type="number" id="etos"name="yr" min=2000 max=2050 value={$curyear}><br><br>
+        <label class="control-label">Τρίμηνο:</label><input type="number" min=1 max=4 id="tr" name="tr"><br><br>
+     
+   <button type="submit" class="btn btn-primary" id="periodchangebtn" >Προβολή για την περίοδο</button>
+   </form>
+    <label>ή μία από τις δύο επιλογές</label>
+    <form class="form-horizontal" method="GET" action={$_SERVER["PHP_SELF"]}>
+   <button type="submit" class="btn btn-primary" id="periodchangebtn" >Τρέχον τρίμηνο</button>
+   </form>
+   <form class="form-horizontal" method="GET" action={$_SERVER["PHP_SELF"]}>
+       <input type=hidden value=1 name="ola">
+   <button type="submit" class="btn btn-primary" id="periodchangebtn" >Όλα</button>
+    </form>
+</div>
+<div class="modal-footer">
+<a href="#" class="m-btn" data-dismiss="modal">Επιστροφή</a>
+</div>
+</div>
 _HTML;
 
 
@@ -235,9 +314,10 @@ $('#file').click(function(){
             return false;
         }
         var vat=$('#vat').val();
-        $('#pay').val(Math.round(valu/(1+vat/100)*100)/100);
-        $('#fpa').val(Math.round(valu*vat/100*100)/100);
-        $('#tax').val(Math.round(valu*0.20*100)/100);
+        var p=Math.round(valu/(1+vat/100)*100)/100;
+        $('#pay').val(p);
+        $('#fpa').val(Math.round(p*vat/100*100)/100);
+        $('#tax').val(Math.round(p*0.20*100)/100);
     }    
 function validateTPY(){
    

@@ -1,4 +1,22 @@
-<?
+<?php
+function addnewlogin($pin,$pass,$name,$dbh){
+    // add new user to table person
+    $q="insert into person (P_PIN, P_PASS,P_NAME)
+select '{$pin}','{$pass}','{$_SERVER['REMOTE_ADDR']}' FROM PERSON
+where TIME_TO_SEC(TIMEDIFF(CURRENT_TIMESTAMP,(SELECT max(P_TIMESTAMP) from person))) > 100 limit 1;";
+$GLOBALS['DB_DIE_ON_FAIL']=false;
+    $res=  db_query($q,$dbh,"","","","INSERT NEW LOGIN");
+    $GLOBALS['DB_DIE_ON_FAIL']=true;
+    if ($res){
+    if (mysqli_affected_rows($dbh)==1){
+        return TRUE;
+    }else{
+        return "Ένας ένας, μόλις κάποιος έκανε έγγραφή λυπάμαι αλλα πρέπει να προσπαθήσεις αργότερα.";
+    }
+    }else{
+        return "Το PIN είναι πιασμένο..";
+    }
+}
 function setdefault(&$var, $default="") {
 /* if $var is undefined, set it to $default.  otherwise leave it alone */
 
@@ -163,7 +181,8 @@ function is_logged_in() {
 	global $USER;
 
 	return isset($USER["user"])
-		&& !empty($USER["user"]["username"])
+		&& !empty($USER["user"]["P_PIN"])
+                && $USER["user"]["P_PIN"]!="0000"
 		&& nvl($USER["ip"]) == $_SERVER["REMOTE_ADDR"];
 }
 
@@ -175,7 +194,7 @@ function require_login() {
 
 	if (! is_logged_in()) {
 		$USER["wantsurl"] = qualified_me();
-		redirect("$CFG->wwwroot/login.php");
+		redirect("index.php","Μόνο για τους εγγεγραμμένους λέμε....",3);
 	}
 }
 

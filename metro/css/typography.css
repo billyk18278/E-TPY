@@ -657,3 +657,10 @@ p.indent:first-letter {
   font-size: 120%;
   line-height: 26px;
 }
+.footer{
+     background-color: lightgray;
+    bottom: 0;
+    height: 40px;
+    left: 0; 
+    right: 0;
+}
