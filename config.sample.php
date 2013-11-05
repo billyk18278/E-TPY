@@ -19,10 +19,9 @@ $CFG->imagedir    = "$CFG->libdir/images";
 $CFG->version     = "beta";
 $CFG->sessionname = "block";
 
-/* administration database configuration */
-
-//$CFG->merged_enumerated_fields=array(array('ΑΝΣ1','ΑΝΣ2','ΑΝΣ3'),array('ΧΕΙΡ1','ΧΕΙΡ2','ΧΕΙΡ3'),array('ΑΝΕΞ','ΑΝΞ2'));//DO NOT USE KEYS!!! Otherwise when checking relative db data there might be conflict or X-file attidute...
-//$CFG->merged_enumerated_fields_explanation=array(array('ΑΝΣ1'=>'Αναισθησιολόγος','ΑΝΣ2'=>'Αναισθησιολόγος2','ΑΝΣ3'=>'Αναισθησιολόγος3'/*,'ΑΝΕΞ','ΑΝΞ2'*/),array('ΧΕΙΡ1'=>'Χειρούργος','ΧΕΙΡ2'=>'Χειρούργος2','ΧΕΙΡ3'=>'Χειρούργος3'),array('ΑΝΕΞ','ΑΝΞ2'));//χρησιμοποιείται ώστε να πάρει από το view τα κατάλληλα πεδία(queries.php)
+/* FOR BACKUP */
+$CFG->mysql = "c:\\MySQL\\bin\\";
+$CFG->z7 = "c:\\Program Files\\7-Zip\\7z.exe";
 
 $GLOBALS['DB_DEBUG']=false; //now also prints $_POST
 $GLOBALS['DB_DIE_ON_DEBUG']=false;
@@ -30,6 +29,7 @@ $GLOBALS['DB_DIE_ON_FAIL']=true;
 //Για την επιλογή στην φόρμα
 $CFG->TAX=20;
 $CFG->VAT=23;
+$CFG->INVTYPES=array("Γενικά έξοδα"=>"<i class=\"icon-money icon-large\"></i>","Έξοδα κινητής τηλεφωνίας"=>"<i class=\"icon-mobile-phone icon-large\"></i>","Έξοδα αυτοκινήτου"=>"<i class=\"icon-truck icon-large\"></i>");
 /* Set locale to greek */
 //setlocale(LC_ALL, 'eng');
 setlocale(LC_ALL, 'ell');
