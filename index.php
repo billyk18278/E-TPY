@@ -135,7 +135,7 @@ ROUND(ROUND(I_VALUE/(1+I_VAT/100),2)*(I_TAX/100),2) as TAX,ROUND(ROUND(I_VALUE/(
 ETOS,TRIMHNO 
 FROM income a join person on a.I_P_PIN=P_PIN join employer on a.I_E_ID=E_ID 
 join 
-(SELECT YEAR(I_DATE) as ETOS,I_ID,CASE WHEN MONTH(NOW())<3 then '1' when MONTH(NOW())>3 and MONTH(NOW())<7  then '2' when MONTH(NOW())>6 and MONTH(NOW())<10 then '3' when MONTH(NOW())>9 then '4' else 'error' end as NOW_TRIMHNO,CASE WHEN MONTH(I_DATE)<3 then '1' when MONTH(I_DATE)>3 and MONTH(I_DATE)<7  then '2' when MONTH(I_DATE)>6 and MONTH(I_DATE)<10 then '3' when MONTH(I_DATE)>9 then '4' else 'error' end as TRIMHNO FROM income) b on a.I_ID=b.I_ID where P_PIN={$pin} {$period} {$sssiontext} order by I_AA;", $ab_dbh);
+(SELECT YEAR(I_DATE) as ETOS,I_ID,CASE WHEN MONTH(NOW())<4 then '1' when MONTH(NOW())>3 and MONTH(NOW())<7  then '2' when MONTH(NOW())>6 and MONTH(NOW())<10 then '3' when MONTH(NOW())>9 then '4' else 'error' end as NOW_TRIMHNO,CASE WHEN MONTH(I_DATE)<4 then '1' when MONTH(I_DATE)>3 and MONTH(I_DATE)<7  then '2' when MONTH(I_DATE)>6 and MONTH(I_DATE)<10 then '3' when MONTH(I_DATE)>9 then '4' else 'error' end as TRIMHNO FROM income) b on a.I_ID=b.I_ID where P_PIN={$pin} {$period} {$sssiontext} order by I_AA;", $ab_dbh,"","","");
 print<<<HTML_
 
     <div id="stamprel" style="display:{$disp};">

@@ -93,8 +93,8 @@ if ($_GET["yr"]>2000 && $_GET["yr"]<2050){
 
 $inres=db_query("SELECT a.O_ID,O_TYPE,O_AA,EE_NAME,O_VAT,O_VALUE,O_REBATES,O_DETAILS,P_PIN,DATE(O_DATE) as DATE,ROUND(O_VALUE/(1+O_VAT/100),2) as PAY,ROUND(ROUND(O_VALUE/(1+O_VAT/100),2)*(O_VAT/100),2) as FPA,ETOS,TRIMHNO FROM outcome a join person on O_P_PIN=P_PIN join employee on O_EE_ID=EE_ID
 join 
-(SELECT YEAR(O_DATE) as ETOS,O_ID,CASE WHEN MONTH(NOW())<3 then '1' when MONTH(NOW())>3 and MONTH(NOW())<7  then '2' when MONTH(NOW())>6 and MONTH(NOW())<10 then '3' when MONTH(NOW())>9 then '4' else 'error' end as NOW_TRIMHNO,
-CASE WHEN MONTH(O_DATE)<3 then '1' when MONTH(O_DATE)>3 and MONTH(O_DATE)<7  then '2' when MONTH(O_DATE)>6 and MONTH(O_DATE)<10 then '3' when MONTH(O_DATE)>9 then '4' else 'error' end as TRIMHNO FROM outcome) b on a.O_ID=b.O_ID  where P_PIN={$pin} {$period} {$sssiontext} order by O_DATE;", $ab_dbh);
+(SELECT YEAR(O_DATE) as ETOS,O_ID,CASE WHEN MONTH(NOW())<4 then '1' when MONTH(NOW())>3 and MONTH(NOW())<7  then '2' when MONTH(NOW())>6 and MONTH(NOW())<10 then '3' when MONTH(NOW())>9 then '4' else 'error' end as NOW_TRIMHNO,
+CASE WHEN MONTH(O_DATE)<4 then '1' when MONTH(O_DATE)>3 and MONTH(O_DATE)<7  then '2' when MONTH(O_DATE)>6 and MONTH(O_DATE)<10 then '3' when MONTH(O_DATE)>9 then '4' else 'error' end as TRIMHNO FROM outcome) b on a.O_ID=b.O_ID  where P_PIN={$pin} {$period} {$sssiontext} order by O_DATE;", $ab_dbh);
 
     
 print "<h1 data-toggle=\"modal\" href=\"#dmexample\">Έξοδα {$periodtext}</h1>";
@@ -318,7 +318,10 @@ if ($('#frm_date').val()==''){
          $.each(data, function(i,item){
              
          if (typeof item['SERVICE ERROR'] !== "undefined" ){
-          alert('ή δεν υπάρχει αυτό το ΑΦΜ (πιθανότατα) ή εγώ δεν το βρίσκω (χλωμό)');
+          alert('ή δεν υπάρχει αυτό το ΑΦΜ (πιθανότατα) ή εγώ δεν το βρίσκω (χλωμό μεν αλλά συμβαίνει σε παλιά ΑΦΜ)');
+          if (($('#onomasia').val()!="")&&($('#afmsearch').val()!="")){
+              $('#addbtn').removeAttr('disabled');
+          }
          }else{
       $('#onomasia').val(item['onomasia']);
       $('#doyDescr').val(item['doyDescr']);
